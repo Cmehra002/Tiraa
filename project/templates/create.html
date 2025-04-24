@@ -1,0 +1,47 @@
+<html>
+<head>
+    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"> -->
+</head>
+<body>
+    {% block news %}
+    <div class="news-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">{{ legend }}</legend>
+                <div class="form-group">
+                    {{ form.title.label(class="form-control-label") }}
+                    {% if form.title.errors %}
+                        {{ form.title(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.title.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.title(class="form-control form-control-lg", style="width:500px") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.news.label(class="form-control-label") }}
+                    {% if form.news.errors %}
+                        {{ form.news(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.news.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.news(class="form-control form-control-lg",style="width:1000px") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
+    {% endblock news %}
+</body>
+
+</html>

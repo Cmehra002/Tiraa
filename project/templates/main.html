@@ -1,0 +1,14 @@
+{% extends "layout3.html" %}
+
+{% block content %}
+    <h2 style="color: rgb(4, 25, 34); font-size: large;font-weight: bolder;">News-Section...</h2>
+    {% for new in news %}
+        <article class="media content-section">
+          <div>
+            <h2 style="color: black; font-size: medium;">>>><a style="color: black;font-size: medium;font-weight: bold;">{{ new.title }}</a></h2>
+            <a href="{{ url_for('news', news_id=new.id) }}">Read more...</a>
+          </div>
+        </article>
+    {% endfor %}
+    
+{% endblock content %}

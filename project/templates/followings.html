@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2 style="color: black;">Following</h2>
+{% if following %}
+    <ul style="list-style-type: none; padding: 0;">
+        {% for followed_user in following %}
+            <li style="display: flex; align-items: center; margin-bottom: 15px;">
+                <a href="{{ url_for('profile', username=followed_user.username) }}" title="View Profile">
+                    <img src="{{ url_for('static', filename='profile_pics/' + followed_user.image_file) }}" 
+                         alt="Profile Picture" 
+                         style="width: 50px; height: 50px; border-radius: 50%; margin-right: 15px;">
+                </a>
+
+                <div>
+                    <a href="{{ url_for('profile', username=followed_user.username) }}" 
+                       style="text-decoration: none; color: black; font-weight: bold;">
+                        {{ followed_user.username }}
+                    </a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>This user is not following anyone yet.</p>
+{% endif %}
+
+<a href="{{ url_for('profile', username=user.username) }}" style="display: block; margin-top: 20px;">Back to Profile</a>
+
+{% endblock %}

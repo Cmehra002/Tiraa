@@ -1,0 +1,33 @@
+{% extends "layout2.html" %}
+
+{% block content %}
+<div style="display: flex; align-items: center; margin-bottom: 5px;">
+    <img style="width: 50px; height: 50px; border-radius: 50%; margin-right:10px;" class="rounded-circle account-img" src="{{ image_file }}">
+    <form action="/search" method="GET" class="search-form">
+        <textarea placeholder="Search" rows="1" style="width:500px; padding: 10px;border-radius: 10px;" name="query"></textarea>
+        
+        <button class="follow-hover" type="submit" style="background-color: rgb(49, 166, 212);border-radius: 5px;margin-left: 5px;width: 100px; border-radius: 10px;">Search</button>
+    </form>
+</div>
+
+{% if query %}
+    {% if users %}
+        <ul>
+            {% for user in users %}
+                <div>
+                    <li style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <!-- Profile Picture as a clickable link -->
+                        <a href="{{ url_for('profile', username=user.username) }} " title="View Profile">
+                            <img src="{{ url_for('static', filename='profile_pics/' + user.image_file) }}" alt="Profile Picture" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                        </a>  
+                        <span style="font-weight: bolder; margin-right: 10px;">{{ user.username }}</span>
+                    </li>
+                </div>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+{% else %}
+{% endif %}
+{% endblock %}

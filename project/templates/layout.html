@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    
+
+</head>
+<body>
+  <main class = "page-content">
+    {% block over %}
+    {% endblock %}
+  </main>
+    <header class="site-header">
+      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <div class="container">
+          <a class="navbar-brand mr-4" href="/" >
+            <img style="height: 40px; margin-right: 10px; position: absolute;" src="/static/cloon.png">
+            <div style="color:#1da1f2 ;font-size:xx-large; margin-left: 50px;">Tira</div>
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+            </div>
+            <div class="navbar-nav">
+              {% if current_user.is_authenticated %}
+                <a style="padding-top:15px; padding-right:20px " href="{{ url_for('chat_page') }}" onclick="alert('redirecting to chat - Space!')">
+                  <button style="border:none; background-color: transparent; cursor: pointer; padding: 5px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0 , 0.2);" >
+                    <img src="static/chat.png" style="width:24px; height:24px; filter: brightness(0) sarturate(100%) invert(15%) sepia(100%) saturate(300%) hue-rotate(190deg); transition: transform 0.2s, filter 0.3s;"  title="Launch Chat" srcset="">
+                    
+                  </button>
+                </a>
+                <a class="nav-item nav-link" style="color: #1da1f2;padding-top: 15px;padding-right: 20px;" href="/search" title="Search"><img src="/static/search.png" style="width:20px; height:20px;"></a>
+                <a class="nav-item nav-link" style="color: #1da1f2;padding-top: 15px;padding-right: 20px;" href="/account" title="Edit Info"><img src="/static/edit.png" style="width:20px; height:20px;"></a>
+                <a class="nav-item nav-link" style="color: #1da1f2;padding-top: 15px;padding-right: 20px;" href="/logout" title="Logout"><img src="/static/logout.png" style="width:20px; height:20px;"></a>
+                <a class="nav-item nav-link" style="color: #1da1f2;padding-top: 15px;padding-right: 20px;" href="{{ url_for('dashboard', username=current_user.username) }}" title="Dashboard"><img src="/static/user_logo.png" style="width:20px; height:20px;"></a>
+              {% else %}
+                <a class="nav-item nav-link" style="color: #1da1f2;" href="/anchor"><img src="/static/news.png" style="width:35px; height:35px;"></a>
+                <a class="nav-item nav-link" style="color: #1da1f2;" href="/register">Register</a>
+                <a class="nav-item nav-link" style="color: #1da1f2;" href="/login">Login</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-8">
+          {% block content %}{% endblock %}
+        </div>
+        <div style="padding-top: 30px;" class="col-md-4">
+          <div></div>
+          <div class="content-section" style="padding-left: 50px;">
+            <h5 style="color: black;font-weight: bolder;font-size: larger;">People you want to Follow</h5>
+            <hr class="hr">
+              <ul class="list-group">
+                {% for user in suggested_users %}
+                  <li style="padding-bottom: 10px;">
+                    <div style="display: flex; align-items: center;">
+                      <a href="{{ url_for('profile', username=user.username) }}" title="View Profile">
+                        <img src="{{ url_for('static', filename='profile_pics/' + user.image_file) }}" alt="Profile Picture" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                      </a>
+                      <p style="margin-bottom: 3px; padding-left: 10px; margin-right: 20px;">
+                        <strong>{{ user.username }}</strong>
+                      </p>
+                    </div>
+                    <!-- Follow/Unfollow button form -->
+                    {% if current_user.id != user.id %}  <!-- Prevent follow button on own profile -->
+                      <form action="{{ url_for('follow1', username=user.username) }}" method="POST" style="display: inline;">
+                        {% if is_following %}
+                          <button class="follow-hover" style="color: white; background-color: rgb(4, 81, 100); height: 30px; border-radius: 10px; text-align: center; padding-bottom: 2px; border: none; width: 100px; font-weight: bold; margin-top: 5px;">
+                            Following
+                          </button>
+                        {% else %}
+                          <button class="follow-hover" style="background-color: rgb(159, 211, 231); height: 30px; border-radius: 10px; text-align: center; padding-bottom: 2px; border: none; width: 80px; font-weight: bold; margin-top: 5px;">
+                            Follow
+                          </button>
+                        {% endif %}
+                      </form>
+                    {% endif %}                 
+                  </li>
+                {% endfor %}
+
+              </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

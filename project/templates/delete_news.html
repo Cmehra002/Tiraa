@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Item by ID</title>
+</head>
+<body>
+    <h2>News List</h2>
+    {% for new in news %}
+        <p>ID: {{ new.id }} - {{ new.title }}</p>
+    {% endfor %}
+
+    <h3>Delete an Item</h3>
+    <form action="{{ url_for('delete_news') }}" method="POST">
+        <label for="news_id">Enter News ID:</label>
+        <input type="number" id="news_id" name="news_id" min="1" required>
+        <button type="submit">Delete Item</button>
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>

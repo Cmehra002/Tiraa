@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+</head>
+<body class="chat-page">
+    <div class="chat-container">
+
+        <div class="friends-list">
+            <div class="friends-heading-box">
+                <h2>Friends</h2>
+            </div>
+            {% if friends %}
+                {% for friend in friends %}
+                    <div class="friend" onclick="openChatWith('{{ friend.username }}')">
+                        <div class="avatar">{{ friend.username[0]|upper }}</div>
+                        <span>{{ friend.username }}</span>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-friends" style="text-align: center; color: #94a3b8;">You have no friends</p>
+            {% endif %}
+        </div>
+
+        <div class="chat-box">
+            <h2 id="chat-title">Chat Cloud</h2>
+            <div id="chat-messages"></div>
+            <div class="input-container">
+                <textarea id="message-input" placeholder="Type a message..." rows="2"></textarea>
+                <button id="send-button" onclick="sendMessage()">&#10148;</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        const currentUser = "{{ username }}";
+        let selectedFriend = null;
+
+        function openChatWith(friendUsername) {
+            selectedFriend = friendUsername;
+            document.getElementById("chat-title").textContent = "Chat with " + friendUsername;
+            document.getElementById("chat-messages").innerHTML = "";
+
+            const roomName = [currentUser, selectedFriend].sort().join("_");
+
+            socket.emit("join", {
+                username: currentUser,
+                friend: selectedFriend
+            });
+
+            fetch(`/messages/${roomName}`)
+                .then(response => response.json())
+                .then(messages => {
+                    messages.forEach(msg => {
+                        displayMessage(msg.sender, msg.text, msg.timestamp);
+                    });
+                });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById("message-input");
+            const message = input.value.trim();
+            if (message !== "" && selectedFriend) {
+                socket.emit("send_message", {
+                    sender: currentUser,
+                    receiver: selectedFriend,
+                    text: message
+                });
+                displayMessage(currentUser, message);
+                input.value = "";
+                input.focus();
+            }
+        }
+
+        function displayMessage(sender, text, timestamp = null) {
+            const msgBox = document.getElementById("chat-messages");
+            const newMsg = document.createElement("div");
+            newMsg.classList.add("message", sender === currentUser ? "sent" : "received");
+            newMsg.innerHTML = `<strong>${sender}:</strong> ${text}` + (timestamp ? `<br><small>${timestamp}</small>` : "");
+            msgBox.appendChild(newMsg);
+            msgBox.scrollTop = msgBox.scrollHeight;
+        }
+
+        socket.on("message", function(data) {
+            if (data.sender === selectedFriend || data.sender === "System") {
+                displayMessage(data.sender, data.text);
+            }
+        });
+
+        // Ctrl+Enter for newline, Enter to send
+        const messageInput = document.getElementById("message-input");
+        messageInput.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                if (event.ctrlKey) {
+                    const cursorPos = messageInput.selectionStart;
+                    const value = messageInput.value;
+                    messageInput.value = value.substring(0, cursorPos) + "\n" + value.substring(cursorPos);
+                    messageInput.selectionStart = messageInput.selectionEnd = cursorPos + 1;
+                    event.preventDefault();
+                } else {
+                    event.preventDefault();
+                    sendMessage();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

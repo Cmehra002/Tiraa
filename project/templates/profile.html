@@ -1,0 +1,33 @@
+{% extends "layout2.html" %}
+{% block content %}
+<div class="content-section">
+    <div class="media">
+      <img src="{{ url_for('static', filename='profile_pics/' + user.image_file) }}" alt="Profile Picture" style="width: 120px; height: 120px; border-radius: 50%;margin-right: 50px;">
+      <div class="media-body">
+        <h2 class="account-heading" style="color: rgb(8, 85, 116); margin-bottom: 0px;">{{ user.username }}</h2>
+        
+        <!-- Follow/Unfollow button form -->
+        {% if current_user.id != user.id %}  <!-- Prevent follow button on own profile -->
+            <form action="{{ url_for('follow', username=user.username) }}" method="POST" style="display: inline;">
+                {% if is_following %}
+                    <button class="follow-hover" style="color: white; background-color: rgb(4, 81, 100); height: 30px; border-radius: 10px; text-align: center; padding-bottom: 2px; border: none; width: 100px; font-weight: bold; margin-top: 5px;">
+                        Following
+                    </button>
+                {% else %}
+                    <button class="follow-hover" style="background-color: rgb(159, 211, 231); height: 30px; border-radius: 10px; text-align: center; padding-bottom: 2px; border: none; width: 80px; font-weight: bold; margin-top: 5px;">
+                        Follow
+                    </button>
+                {% endif %}
+            </form>
+        {% endif %}
+        
+        <p class="text-secondary" style="font-weight: bold; margin-top: 10px;">{{ user.email }}</p>
+        
+        <div style="margin-top: 10px;">
+          <a href="{{ url_for('followers', username=user.username) }}" class="btn btn-outline-primary btn-sm">Followers: {{ user.followers.count() }}</a>
+          <a href="{{ url_for('followings', username=user.username) }}" class="btn btn-outline-primary btn-sm">Following: {{ user.followings.count() }}</a>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock content %}
